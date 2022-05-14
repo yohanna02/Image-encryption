@@ -38,9 +38,12 @@ export const encrypt = async (fullPath: string) => {
 		resolve();
 	});
 
-	image.write(path.join(__dirname, `../assets/${outputImageFile}`));
+	const outputImagePath = path.join(__dirname, `../assets/${outputImageFile}`);
+	const outputKeyPath = path.join(__dirname, `../assets/${outputKeyFile}`);
 
-	fs.writeFileSync(path.join(__dirname, `../assets/${outputKeyFile}`), Buffer.from(key).toString('base64'));
+	image.write(outputImagePath);
 
-	return { outputImageFile, outputKeyFile };
+	fs.writeFileSync(outputKeyPath, Buffer.from(key).toString('base64'));
+
+	return { outputImagePath, outputKeyPath };
 };

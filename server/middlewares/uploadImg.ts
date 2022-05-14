@@ -11,7 +11,11 @@ const storage = multer.diskStorage({
 	}
 });
 
-const filterImage = (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
+const filterImage = (
+	req: Request,
+	file: Express.Multer.File,
+	cb: multer.FileFilterCallback
+) => {
 	const fileType = /jpeg|jpg|png/;
 
 	const extname = fileType.test(
@@ -34,7 +38,28 @@ const upload = multer({
 	}
 }).single("image");
 
+const decryptUpload = multer({
+	storage,
+}).fields([
+	{
+		name: "image",
+		maxCount: 1
+	},
+	{
+		name: "key",
+		maxCount: 1
+	}
+]);
+
 const imgUpload = (req: Request, res: Response, next: NextFunction) => {
+	if (req.path === "/decrypt") {
+		decryptUpload(req, res, err => {
+			if (err) return res.status(500).json({ msg: err.message });
+
+			next();
+		});
+		return;
+	}
 	upload(req, res, err => {
 		if (err) return res.status(500).json({ msg: err.message });
 
