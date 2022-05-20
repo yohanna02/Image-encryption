@@ -1,6 +1,7 @@
+import { unlinkSync, createWriteStream, readFileSync } from "fs";
+import { join } from "path";
 import { Request, Response } from "express";
 import JSZip from "jszip";
-import { saveAs } from "file-saver";
 
 import { encrypt } from "../utils/encrypt";
 
@@ -9,16 +10,23 @@ const encryptController = async (req: Request, res: Response) => {
 		if (!req.file)
 			return res.status(422).json({ status: "Error", msg: "No Image" });
 
-		const { outputImagePath, outputKeyPath } = await encrypt(req.file.path);
+		const { outputImagePath, outputKeyPath, outputImageFile, outputKeyFile } = await encrypt(req.file.path);
 
 		const zip = new JSZip();
 
-		zip.file(outputImagePath);
-		zip.file(outputKeyPath);
+		const imageData = readFileSync(outputImagePath);
+		const keyData = readFileSync(outputKeyPath);
+		zip.file(outputImageFile, imageData);
+		zip.file(outputKeyFile, keyData);
 
-		zip.generateAsync({ type: "blob" }).then(function (content) {
-			saveAs(content, "encryted file.zip");
-		});
+		zip
+			.generateNodeStream({ type: "nodebuffer", streamFiles: true })
+			.pipe(createWriteStream(join(__dirname, "../assets/encrypted file.zip")))
+			.on('finish', function () {
+				unlinkSync(outputImagePath);
+				unlinkSync(outputKeyPath);
+			});
+
 		res.json({ status: "OK", msg: "Encryped Image successfully" });
 	} catch (error) {
 		console.log(error);

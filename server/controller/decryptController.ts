@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import JSZip from "jszip";
-import { saveAs } from "file-saver";
 
 import { decrypt } from "../utils/decrypt";
 
@@ -19,7 +18,7 @@ const decryptController = async (req: Request, res: Response) => {
 		zip.file(outputPath);
 
 		zip.generateAsync({ type: "blob" }).then(function (content) {
-			saveAs(content, "decrypted file.zip");
+			
 		});
 		res.json({ status: "OK", msg: "Decrytped Image successfully" });
 	} catch (error) {
