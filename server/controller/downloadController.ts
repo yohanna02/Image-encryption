@@ -1,5 +1,5 @@
 import { join } from "path";
-import { existsSync, unlink, unlinkSync } from "fs";
+import { existsSync } from "fs";
 import { Request, Response } from "express";
 
 const downloadController = (req: Request, res: Response) => {
@@ -9,13 +9,7 @@ const downloadController = (req: Request, res: Response) => {
         const filePath = join(__dirname, "../assets/encrypted file.zip")
 
         if (existsSync(filePath)) {
-            res.download(filePath, (err) => {
-                if (err) return;
-                
-                setTimeout(() => {
-                    unlinkSync(filePath);
-                }, 20000);
-            });
+            res.download(filePath);
             return;
         }
 
@@ -23,14 +17,11 @@ const downloadController = (req: Request, res: Response) => {
         return;
     }
 
-    const filePath = join(__dirname, "../assets/decrypted file.zip")
+    const filePath = join(__dirname, "../assets/decrypted file.zip");
 
     if (existsSync(filePath)) {
-        res.download(filePath, (err) => {
-            if (err) return;
-            
-            unlinkSync(filePath);
-        });
+        res.download(filePath);
+        return;
     }
 
     res.status(404).json({status: "File not found", msg: "No Files have be decrypted"});

@@ -44,10 +44,10 @@ export const decrypt = async (filePath: string, keyPath: string) => {
 		`../assets/${fileNameWithoutExtension}.${extension}`
 	);
 
-	image.write(outputPath);
+	await image.writeAsync(outputPath);
 
 	fs.unlinkSync(filePath);
     fs.unlinkSync(keyPath);
 
-	return { outputPath };
+	return { outputPath,  outputImageFileName: `${fileNameWithoutExtension}.${extension}`};
 };

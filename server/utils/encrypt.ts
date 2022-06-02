@@ -13,8 +13,8 @@ export const encrypt = async (fullPath: string) => {
 
 	// get the image extension using jimp
 	const extension = image.getExtension();
-	const outputImageFile = `${fileNameWithoutExtension}_encrypted.${extension}`;
-	const outputKeyFile = `${fileNameWithoutExtension}_key.txt`;
+	const outputImageFileName = `${fileNameWithoutExtension}_encrypted.${extension}`;
+	const outputKeyFileName = `${fileNameWithoutExtension}_key.txt`;
 
 	// get the rgba values of the image
 	const rgba = image.bitmap.data;
@@ -38,8 +38,8 @@ export const encrypt = async (fullPath: string) => {
 		resolve();
 	});
 
-	const outputImagePath = path.join(__dirname, `../assets/${outputImageFile}`);
-	const outputKeyPath = path.join(__dirname, `../assets/${outputKeyFile}`);
+	const outputImagePath = path.join(__dirname, `../assets/${outputImageFileName}`);
+	const outputKeyPath = path.join(__dirname, `../assets/${outputKeyFileName}`);
 
 	await image.writeAsync(outputImagePath);
 
@@ -49,7 +49,7 @@ export const encrypt = async (fullPath: string) => {
 	return { 
 		outputImagePath, 
 		outputKeyPath, 
-		outputImageFile, 
-		outputKeyFile
+		outputImageFileName, 
+		outputKeyFileName
 	};
 };

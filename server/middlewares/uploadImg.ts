@@ -52,19 +52,20 @@ const decryptUpload = multer({
 ]);
 
 const imgUpload = (req: Request, res: Response, next: NextFunction) => {
-	if (req.path === "/decrypt") {
-		decryptUpload(req, res, err => {
+	// console.log(req.path);
+	if (req.path === "/api/v1/decrypt") {
+		decryptUpload(req, res, (err) => {
 			if (err) return res.status(500).json({ msg: err.message });
 
 			next();
 		});
-		return;
-	}
-	upload(req, res, err => {
-		if (err) return res.status(500).json({ msg: err.message });
+	} else {
+		upload(req, res, (err) => {
+			if (err) return res.status(500).json({ msg: err.message });
 
-		next();
-	});
+			next();
+		});
+	}
 };
 
 export default imgUpload;

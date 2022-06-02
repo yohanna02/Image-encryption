@@ -10,14 +10,13 @@ const encryptController = async (req: Request, res: Response) => {
 		if (!req.file)
 			return res.status(422).json({ status: "Error", msg: "No Image" });
 
-		const { outputImagePath, outputKeyPath, outputImageFile, outputKeyFile } = await encrypt(req.file.path);
-
+		const { outputImagePath, outputKeyPath, outputImageFileName, outputKeyFileName } = await encrypt(req.file.path);
 		const zip = new JSZip();
 
 		const imageData = readFileSync(outputImagePath);
 		const keyData = readFileSync(outputKeyPath);
-		zip.file(outputImageFile, imageData);
-		zip.file(outputKeyFile, keyData);
+		zip.file(outputImageFileName, imageData);
+		zip.file(outputKeyFileName, keyData);
 
 		zip
 			.generateNodeStream({ type: "nodebuffer", streamFiles: true })

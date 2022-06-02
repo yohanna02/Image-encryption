@@ -51,9 +51,9 @@ function Encrytion() {
             }
             setLoading(true);
 
-            let url = "/api/v1/encrypt";
+            let url = "http://localhost:3001/api/v1/encrypt";
             if (formData.encryptionType === "d") {
-                url = "/api/v1/decrypt";
+                url = "http://localhost:3001/api/v1/decrypt";
             }
             const myFormData = new FormData();
             myFormData.append("image", formData.image);
@@ -102,7 +102,7 @@ function Encrytion() {
             </Form>
 
             <ModalCom 
-                showModal={showModal} 
+                showModal={showModal}
                 toggleModal={toggleModal} 
                 title={modalInfo.title} 
                 msg={modalInfo.msg}
