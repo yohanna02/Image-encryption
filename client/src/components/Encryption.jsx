@@ -104,9 +104,10 @@ function Encrytion() {
             <ModalCom 
                 showModal={showModal}
                 toggleModal={toggleModal} 
-                title={modalInfo.title} 
-                msg={modalInfo.msg}
-            />
+                title={modalInfo.title}
+            >
+                <p>{modalInfo.msg}</p>
+            </ModalCom>
         </>
     );
 }
