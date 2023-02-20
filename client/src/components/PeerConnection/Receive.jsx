@@ -2,35 +2,34 @@ import { useEffect, useState, useRef } from "react";
 import { QrScanner } from "react-qrcode-scanner";
 import { Button, Overlay, Tooltip } from "react-bootstrap";
 import { QRCodeSVG } from "qrcode.react";
-import { useConnection } from "../../context/ConnectionProvider"
+import { useConnection } from "../../context/ConnectionProvider";
+import FileTransfer from "./FileTransfer";
 
 function Receive() {
   const [iceCandidate, setIceCandidate] = useState("");
   const [showToolTips, setShowToolTips] = useState(false);
   const target = useRef(null);
 
-  const { setConnected } = useConnection();
+  const {
+    connected,
+    peerConnection,
+    setRtcPeerConnection,
+    setDataChannel,
+    disconnect,
+  } = useConnection();
 
-  const [peerConnection, setPeerConnection] = useState(new RTCPeerConnection());
-  let dataChannel = peerConnection.createDataChannel("channel");
+  // const [peerConnection, setPeerConnection] = useState(new RTCPeerConnection());
+  // let dataChannel = peerConnection.createDataChannel("channel");
   useEffect(() => {
     function startWebRTC() {
       // setPeerConnection(new RTCPeerConnection());
       // dataChannel = peerConnection.createDataChannel("channel");
+      setRtcPeerConnection();
 
       peerConnection.ondatachannel = (e) => {
-        dataChannel = e.channel;
+        setDataChannel(e.channel);
       };
 
-      dataChannel.onopen = (e) => {
-        console.log("Connection opened");
-        setConnected(true);
-      };
-
-      dataChannel.onclose = (e) => {
-        console.log("Connection Closed");
-        setConnected(false);
-      };
 
       peerConnection.onicecandidate = (e) => {
         const _iceCandidate = JSON.stringify(peerConnection.localDescription);
@@ -43,10 +42,7 @@ function Receive() {
 
     return () => {
       console.log("bye");
-      dataChannel.close();
-      dataChannel = null;
-      peerConnection.close();
-      setPeerConnection(null);
+      disconnect();
     };
   }, []);
 
@@ -84,33 +80,51 @@ function Receive() {
     setShowToolTips(true);
 
     setTimeout(() => {
-        setShowToolTips(false);
+      setShowToolTips(false);
     }, 3000);
   }
 
+  function receiveFile() {}
+
   return (
     <>
-      {/* <div style={{ height: "20rem", position: "relative" }}>
-        <QrScanner onScan={handleScan} onError={handleError} />
-      </div> */}
-      {iceCandidate === "" ? (
-        <Button onClick={enterSenderOffer}>Enter Sender's Offer</Button>
+      {connected ? (
+        <FileTransfer send={null} />
       ) : (
         <>
-          <QRCodeSVG value={iceCandidate} size="400" style={{ width: "100%" }} />
-          <div className="mt-3 d-flex justify-content-evenly">
-              <Button ref={target} onClick={copyText}>Copy</Button>
-              <Overlay target={target.current} show={showToolTips} placement="right">
-                {(props) => (
-                <Tooltip id="overlay-example" {...props}>
-                  Copied!
-                </Tooltip>
-                )}
-              </Overlay>
-            </div>
+          {/* <div style={{ height: "20rem", position: "relative" }}>
+        <QrScanner onScan={handleScan} onError={handleError} />
+      </div> */}
+          {iceCandidate === "" ? (
+            <Button onClick={enterSenderOffer}>Enter Sender's Offer</Button>
+          ) : (
+            <>
+              <QRCodeSVG
+                value={iceCandidate}
+                size="400"
+                style={{ width: "100%" }}
+              />
+              <div className="mt-3 d-flex justify-content-evenly">
+                <Button ref={target} onClick={copyText}>
+                  Copy
+                </Button>
+                <Overlay
+                  target={target.current}
+                  show={showToolTips}
+                  placement="right"
+                >
+                  {(props) => (
+                    <Tooltip id="overlay-example" {...props}>
+                      Copied!
+                    </Tooltip>
+                  )}
+                </Overlay>
+              </div>
+            </>
+          )}
+          <p>{text}</p>
         </>
       )}
-      <p>{text}</p>
     </>
   );
 }
